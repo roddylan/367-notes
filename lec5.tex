@@ -1,0 +1,326 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 5 - Jan 25}
+
+
+\section{Assignment}
+softmax: $y_k = f\dfrac{\exp \{z_k\}}{\sum_{k=1}^{K} \exp \{z_k \}}$
+\\[10pt]
+$x\in\mathbb R^d$\\
+$y\in\mathbb R^k$\\
+$z\in\mathbb R^k$\\
+$W\in\mathbb R^{k\times d}$\\
+$y = \mathrm{softmax}(z) = \mathrm{softmax}(Wx + b)$
+% \\
+\[
+    \frac{z}{k} = \frac{W}{k\times d} \cdot \frac{}{}
+\]
+$W$, rows are vectors
+
+\section{Lecture}
+Log Reg:\\
+$z= w^\top x + b$ 
+\\
+$y = \sigma (z) = \dfrac{1}{1+e^{-(z)}}$
+\\[5pt]
+Classification (Softmax):\\
+$z_k =w^\top _k x + b_k$\\
+$y_k = \dfrac{\exp (z_k)}{\sum_{k'}^{}\exp(z_{k'})}$
+\\[5pt]
+If $k=2$, softmax/classification and log reg are equivalent
+\\
+(proof of equality in thursday, jan 25 lecture notes)
+\\
+sigmoid function comes from softmax; divide numerator
+\\
+bias term $b$ is learned 
+
+
+\subsection{How To Train Model}
+Minimize loss function
+\[
+    \underset{w,b}{\mathrm{minimize}} J(w,b)
+\]
+In logistic regression, use cross entropy loss:
+\[
+    J = \sum_{m=1}^{M} \left [
+        -t^{(m)} \ln y^{(m)} - (1-t^{(m)}) \ln (1-y^{(m)})
+    \right ]
+\]
+In softmax (multiclassification), use cross entropy loss for multiple classes:
+\[
+    J = \sum_{m=1}^{M} \left [
+        -\sum_{k=1}^{K} t_k^{(m)} \ln y_k ^{(m)}
+    \right ]
+\]
+\noindent
+CE loss is also the same for logistic regression and 2-way classification
+\\
+No closed form solution for log reg due to $\exp$ (cant group/separate unknown from known var)
+\subsubsection{Logistic Regression}
+\begin{flalign*}
+    \frac{\partial J}{\partial w_i} &= \frac{\partial}{\partial w_i}
+    \sum_{m=1}^{M}
+    \left [
+        -t^{(m)} \ln y^{(m)} - (1-t^{(m)}) \ln (1-y^{(m)})
+    \right ]
+    \\
+    \frac{\partial J^{(m)}}{\partial w_i} &=
+    \frac{\partial}{\partial w_i}
+    \left [
+        -t \ln y - (1-t) \ln (1-y)
+    \right ]
+    \intertext{m omitted; need to expand y (contains w)}
+    &=
+    \frac{\partial}{\partial w_i}
+    \left [
+        -t \ln \frac{1}{1+e^{-(w^\top x + b)}} - (1-t) \ln (1-\frac{1}{1+e^{-(w^\top x + b)}})
+    \right ]\\
+    &= 
+    \frac{\partial}{\partial w_i}
+    \left [
+        t \ln (1+e^{-(w^\top x + b)}) - (1-t) (\ln e^{-z} - \ln (1+e^{-z}))
+    \right ]\\
+    &= 
+    \frac{\partial}{\partial w_i}
+    \left [
+        t \ln (1+e^{-(w^\top x + b)}) - (1-t) (-z - \ln (1+e^{-z}))
+    \right ]\\
+    &= 
+    \frac{\partial}{\partial w_i}
+    \left [
+        t \ln (1+e^{-z}) - (1-t) (-z - \ln (1+e^{-z}))
+    \right ]
+    \\
+    &= 
+    \frac{\partial}{\partial w_i}
+    \left [
+        -(1-t)(-z) - 1\cdot (-\ln(1+e^{-z}))
+    \right ] \\
+    &= 
+    \frac{\partial}{\partial w_i}
+    \left [
+        (1-t)z + \ln(1+e^{-z})
+    \right ]
+    \\
+    &= 
+    \frac{\partial}{\partial w_i}
+    \left [
+        (1-t)(w^\top x + b) + \ln(1+e^{-(w^\top x + b)})
+    \right ]\\
+    &= (1-t)\cdot x_i + \frac{1}{1+e^{-z}} e^{-z}(-x_i) \\
+    &= (1-t)x_i - \frac{e^{-z}}{1+e^{-z}} x_i
+    \\
+    &= \left (
+        1-\frac{e^{-z}}{1+e^{-z}} - t 
+    \right )x_i 
+    = \left (
+        \frac{1}{1+e^{-x}} - t
+    \right )x_i
+    = \left (
+        y - t
+    \right )x_i
+\end{flalign*}
+$y$ - prediction \\
+$t$ - target \\
+$x_i$ - amplified by feature
+\subsubsection{Linear Regression}
+\[
+    J^{(m)} = \frac{1}{2}(y-t)^2 \ \ \ \text{where } y= w^\top x +b
+\]
+\begin{flalign*}
+    \frac{\partial J^{(m)}}{\partial w_i} &= (y-t)x_i
+\end{flalign*}
+\noindent
+Same as log reg. Not a coincidence.
+\\
+\textbf{Generalized Linear Models (GLIM)}
+
+\subsubsection{Softmax/Multiclassification}
+Still a linear model, squashing function not linear\\
+$z = Wx + b$
+\\
+$y=\mathrm{softmax}(z)$
+\\
+$W\in\mathbb R^d$
+\[
+    \frac{\partial J}{\partial w_{ij}} = (y_i-t_i)x_j
+\]
+$i$ - category; $j$ - feature
+\\
+$y$ goes with category, $x$ goes with feature
+
+
+\subsection{Convexity}
+\begin{definition}
+    {Convex Set}{}
+    A set $S$ is a convex set iff $\forall x,y\in \mathcal S$, $\forall \lambda \in (0,1)$
+    \[
+        \lambda x +(1-\lambda)y \in \mathcal S
+    \]
+    
+    Every point is trying to "stretch out", no point folds into interior.\\
+    Draw a line b/w points $\to$ all points on line should be part of set.\\
+    Disconnected sets are never convex sets.
+\end{definition}
+
+\begin{definition}
+    {Convex Function}{}
+    A real valued function $f$ is convex iff
+    \begin{enumerate}
+        \item domain of $f$ is a convex set
+        \item $\forall x,y \in \text{domain }f$, $\forall \lambda \in (0,1)$
+        \[
+            \lambda f(x) + (1-\lambda) f(y) \ge f(\lambda x + (1-\lambda)y)
+        \]
+    \end{enumerate}
+\end{definition}
+
+
+\subsection{Optimization}
+\[
+    w \gets w + \alpha \nabla f
+\]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,257 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage[ruled,longend]{algorithm2e}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section{Lecture 1 - Jan 9}
+\subsection{What is ML}
+  Machine = automation.\\
+  ML = Learning\footnote[1]{"Learning" from instructions = programming; from experience = from dataset} from experience
+  \begin{list}{}{spacing}
+    \item Training/Learning experience: $\xrightarrow{\text{ML Algo}}$ ML model
+    \item Inference/Prediction\footnote[2]{$x_*$ = new data}: $x_* \xrightarrow{\text{ML Model}}\hat y ^*$
+  \end{list}
+  Input features d-dimensional real vectors ($\vec x^{(m)} \in \mathbb R^d)$\\
+  $y^{(m)} \in \mathbb R$ regression problem
+  \\
+  $y^{(m)} \in \{\}$ classification problem
+  \begin{list}{}{spacing}
+    \item $k=2 \rightarrow$ binary; $k\ge 2\rightarrow$ multi class
+    \item categories mutually exclusive
+  \end{list}
+  \begin{expln}{Multilabel Classification}{}
+    Naive: Solve as separate task (structured prediction)
+  \end{expln}
+  If $y^{(m)}$ has internal structure: Treat as separate tasks; Structured prediction (PGM)
+  \break
+  \subsection{Supervised Learning}
+  Labeled datasets used (ie. given labeled training data)\\
+  Experience is a tuple $\{(x^{(m)}, y^{(m)})\}_{m=1}^M$
+
+
+
+
+
+\section{Lecture 2 - Jan 11}
+\subsection{Supervised Learning}
+\begin{enumerate}
+  \item \textbf{Training/Learning: } \\Experience $\xrightarrow{\text{ML Training}}$ ML Model
+  \item \textbf{Inference/Prediction: } 
+\end{enumerate}
+
+\subsection{Unsupervised Learning}
+% Clustering (similar things close together)\\[3pt]
+$t^{(m)}$ is not given in training \\[3pt]
+Labels are not given; samples are unlabeled. Patterns in data are present (ie. from clustering).
+Task is ambiguous; less well defined.
+\begin{example}
+  {Types of Unsupervised Learning}{}
+  \textbf{Clustering} - similar things close together \\
+  \textbf{Outlier Detection} - datapoints outside of trend \\
+  \textbf{Representation Learning} - extract meaningful patterns 
+  to create representations that are easier to understand/process
+\end{example}
+
+\subsection{Reinforcement Learning}
+Well defined. Gives feedback on actions through rewards, 
+doesn't give 'answer' like supervised learning.
+\subsubsection{SL vs RL}
+Supervised Learning - taught on exact steps
+\\
+Reinforcement Learning - taught on feedback from actions (no reference solution)
+
+
+\subsection{Regression}
+\subsubsection{Linear Regression}
+Input = $x^{(m)} \in \mathbb R ^d$ \\
+Output = $y^{(m)} \in \mathbb R$ \\
+Data = $ \{ ( x^{(m)}, t^{(m)} ) \}_{m=1}^M $
+\begin{expln}
+  {}{}
+  "Can I learn a function from $\{ h: \mathbb R^d \to \mathbb R\}$" \\
+  No, set too powerful.
+\end{expln}
+
+To make set meaningful, we need to restrict set of functions (\textbf{Hypothesis set}).
+Only consider functions in hypothesis set. \\[5pt]
+$\mathcal H _{\textsf{linear}} = \left \{ h : \mathbb R ^d \to \mathbb R | h(x) = \sum_{i=1}^{d}w_i x_i + b, w_i,b \in \mathbb R \right \}
+$
+
+\begin{expln}
+  {Visualizing Higher Dim Space}{}
+  Hypotheis set is a hyperplane. Vertical hyperplane invalid (same as low dim)
+\end{expln}
+
+Training loss function/objective = 
+$J(h, \mathcal D_{\text{train}})$
+\\
+$h^* = \min_{h \in \mathcal H} J(h, \mathcal D_{\text{train}})
+$
+\\
+Linear Regression Objective\footnote[1]{Squared to give more weight to larger errors; Probabilistic interpretation}: \\
+$(|h(x^{(m)}; w, b ) - t^{(m)}|)^2$
+
+
+\section{Lecture 3 - Jan 16}
+$J(w) = \frac{1}{2M} \left \| Xw-t \right \|^2$\\[5pt]
+\begin{math}
+  \frac{\partial J}{\partial W} = \frac{1}{M} [X^\top X w - X^\top t] =0
+  \\[5pt]
+  w = (X^\top X)^{-1} X^\top t \text{ when $X^\top X$ is invertible}
+\end{math}
+\\[5pt]
+When is $X^\top X$ non-invertible (not full rank)
+\\[5pt]
+$X\in \mathbb R ^{M\times (d+1)}$\\[5pt]
+If rank is not $d+1$, then
+\begin{outline}
+  \1 $M < d+1$; more features than samples (underdetermined)
+    \2 pseudoinverse works mathematically but may not give a meaningful ML \textbf{model}
+    \2 fix by simplifying model, refine feature selection
+    \2 "sparse" models automatically select relevant features 
+  \1 Duplicate features (linearly dependent); rank of $X^\top$ 
+  less than $d+1$
+    \2 can use pseudoinverse
+\end{outline}
+\noindent
+Problem of closed-form sol. for MSE:
+  \begin{list}{}{}
+    \item calculating inverse not fun
+    \item slow $O(d^3)$
+    \item can be numerically unstable 
+  \end{list}
+
+\subsection{Gradient Based Methods}
+\begin{algorithm}
+  \caption{Gradient Descent}
+  Randomly initialize $w^{(0)}$\;
+  \For{$e=1,2,\cdots$ \text{until satisfied}}
+  {
+    $w^{(e)} = w^{(e-1)} - \alpha \nabla _w J(w) \bigg | _{w=w^{(e-1)}  }$
+  }
+\end{algorithm}
+\noindent
+Big problem of gradient: might not point to desired direction 
+\\
+gradient always in direction orthogonal to contour 
+\subsubsection{Batch Gradient}
+Use a couple samples to approx gradient (very cheap), reach optimimum faster than full batch.
+
+\subsection{Closed Form Sol. vs Iterative Methods}
+Use closed form solution when it \textbf{exists}, is \textbf{cheap} and is \textbf{numerically stable}
+\\
+Use iterative method otherwise.
+
+\subsection{Probabilistic Interpretation:}
+For \textbf{linear regression}: 
+\begin{list}{}{}
+  \item Assume $\epsilon \sim \mathcal N (0, \sigma ^2)$
+  \item Assume target $t^{(m)} = w^\top X^{(m)} + \epsilon ^{(m)}$ where $w$ is unknown constant
+  \item Target $t^{(m)} \sim \mathcal N (w^\top x^{(m)}, \sigma ^2)$ \\
+        (target is gaussian since error/noise gaussian) 
+        \\
+        (gaussian chosen because it occurs naturally + CLT) \\
+        (gaussian tail decreases exponentially/quadratically)
+\end{list}
+\noindent
+Non-Gaussian:
+\begin{list}{}{}
+  \item Uniform
+  \item Laplace (similar to gaussian)
+  \item Power law distr / zipf distr. (similar to gaussian, but very long tail)
+  \item Poisson (converges to gaussian $x\to \infty$)
+\end{list}
+
+\noindent
+% \begin{math}
+%   P(t^{(m)}, x^{(m)}) = \frac{1}{\sqrt[]{2\pi}\sigma} \exp \left \{
+%     \frac{}{6}
+%   \right \}
+% \end{math}
+
+\begin{math}
+  \mathcal D _{\textsf{train}} = \left \{ 
+    (x^{(m)}, t^{(m)})_{m=1}^M
+  \right \} 
+\end{math}
+\\
+Discrete and Generative Product 
+% \begin{algorithm}
+% \begin{algorithmic}[1]
+% \Procedure{GD}{}
+
+
+% \end{algorithmic}
+% \end{algorithm}
+
+
+
+\end{document}

@@ -1,0 +1,305 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{bbm}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 8 - Feb 6}
+\section{Optima}
+\begin{definition}
+    {Global Optimum (min)}{}
+    $x$ is a global optimum of $f$ iff $\forall y\in \mathrm{dom}_f$, $f(y) \ge f(x)$
+\end{definition}
+
+
+\begin{definition}
+    {Local Optimum (min)}{}
+    $x$ is a local optimum of $f$ iff 
+    \\
+    $\exists \epsilon > 0$, $\forall y\in \mathrm{dom}_f$ if $\| y-x \| < \epsilon$
+    then $f(y) \ge f(x)$ 
+    \\
+    or
+    \\
+    $\forall y$ in the neighborhood of $x$ ($N_\epsilon (x)$), $f(y) \ge f(x)$
+\end{definition}
+
+\begin{thm}
+{}{}
+Let $f$ be a convex function\\
+A local optimum of $f$, $x$, is a global optimum
+\end{thm}
+\noindent
+There must exist some $\epsilon$ s.t. $\forall z \in N_\epsilon (x), f(z) \ge f(x)$
+\\
+Fix such $\epsilon$ for further use\\[5pt]
+Consider any $y \in \mathrm{dom}_f$ 
+\begin{list}{}{}
+    \item Case 1: $\| y-x\| < \epsilon$
+    \\
+    $f(y) \ge f(x)$ already known by local optimality
+
+    \item Case 2: $\| y-x\| \ge \epsilon$\\
+    ($z$ should be halfway b/w $x$ and $\epsilon$ boundary)
+    \\
+    Pick $\lambda = \dfrac{\|y-x\| - \frac{1}{2}\epsilon}{\|y-x\|}$ 
+    \[
+        z = \lambda x + (1-\lambda)y
+    \]
+    % Then, $\|z -x \| = \left \| \dfrac{\|y-x\| - \frac{1}{2}\epsilon}{\|y-x\|} x + \dfrac{\frac{1}{2}\epsilon}{\|y-x\|}y-x \right \|$
+    Then,\footnote[1]{28 min for feb 6 Lecture}
+    \begin{flalign*}
+        \|z -x \| &= \left \| \dfrac{\|y-x\| - \frac{1}{2}\epsilon}{\|y-x\|} x + \dfrac{\frac{1}{2}\epsilon}{\|y-x\|}y-x \right \|\\
+        &= \left \| \frac{-\frac{1}{2}\epsilon}{\| y-x \|} x +
+        \frac{\frac{1}{2}\epsilon}{\|y-x\|}y 
+        \right \| = \frac{1}{2}\epsilon
+    \end{flalign*}
+    $\lambda f(x) + (1-\lambda)f(y) \ge f(z) \ge f(x)$\\
+    $\lambda f(x) + (1-\lambda)f(y) \ge f(x)$\\
+    $f(y) \ge f(x)$
+    \item 
+\end{list}
+
+\subsection{Propositions}
+\begin{enumerate}
+    \item If $f$ is a convex function, $\nabla f(x)$ exists at $x_0$, and $\nabla f(x_0) = 0$ 
+        \\
+        Then $x$ is a local/global optimum
+    \item For a differentiable function $f$, the gradient descent
+        \[
+            w^{\text{(new)}} = w^{\text{(old)}} - \alpha \nabla f(w^{\text{(old)}})
+        \]
+        If $\nabla f(w^{\text{(old)}}) \ne 0$ and $\alpha > 0$ is small enough, then
+        \[
+            f(w^{\text{(new)}}) < f(w^{\text{(old)}})
+        \]
+        \begin{proof}
+            {}{}
+            Prove via taylor expansion.
+            % \\
+            \begin{flalign*}
+                f(w^{\text{(new)}}) &= f(w^{\text{(old)}}) + [\nabla f(w^{\text{(old)}})]^\top (w^{\text{(new)}} - w^{\text{(old)}}) + \mathrm{h.o.t}\\
+                &= f(w^{\text{(old)}}) + [\nabla f(w^{\text{(old)}})]^\top (-\alpha \nabla f(w^{\text{old}}))
+            \end{flalign*}
+            $\nabla f$ is a descending direction
+            \\
+            $M \nabla f(x)$ if $M \ge 0$\footnote[1]{52 min in feb 6 lecture}
+        \end{proof}
+    % \item 
+\end{enumerate}
+\pagebreak
+\section{Exp Family, GLM}
+Discussed topics:
+Linear, Logistic, Softmax\\
+All of them have probabilistic assumption $\Rightarrow$ Loss function $\Rightarrow$ Optimization
+\[
+    (y_i - t_i) x_i
+\]
+Exponential Family and Generalized Linear models
+\begin{definition}
+    {Exponential Family}{}
+    $x \sim \mathrm{EXP} (\eta)$ if
+    \[
+        p(x; \eta) = h(x)\exp(\eta ^\top T(x)- A(\eta))
+    \]
+    $T(x)$ - sufficient statistics; features of $x$\\
+    $\eta$ - natural parameter
+    \\
+    $h(x)$ - unparameterized residual \footnote[1]{62 min feb 6 lec}
+    \\
+    $A(\eta)$ - normalization term\\[10pt]
+    $h(x)$ can be controlled (ie. how residual calculated)\\
+    $T(x)$ can be controlled\footnote[2]{66 min feb 6 lec}
+
+\end{definition}
+
+\begin{flalign*}
+    \int h(x) \exp (\eta^\top T(x) - A(\eta))dx &= 1\\
+    \int h(x) \frac{\exp (\eta ^\top T(x))}{\exp (A(\eta))}dx &= 1
+\end{flalign*}
+\[
+    A(\eta) = \ln \int h(x) \exp(\eta ^\top T(x))dx
+\]
+"Logged Linear Model"
+
+\begin{example}
+    {}{}
+    \begin{flalign*}
+        p(x_i; \mu, \sigma^2) &= \frac{1}{\sqrt[]{2\pi}\sigma}\exp \left \{
+            -\frac{1}{2\sigma^2}(x-\mu)^2
+        \right \}\\
+        &= \frac{1}{\sqrt{2\pi}\sigma}\exp \left \{
+            -\frac{1}{2\sigma^2}x^2 +\frac{1}{\sigma^2}x\mu -\frac{1}{2\sigma^2}\mu^2
+        \right \}
+        \\
+        &= \frac{1}{\sqrt{2\pi}}\exp \left \{
+            -\frac{1}{2\sigma^2}x^2 +\frac{1}{\sigma^2}x\mu -\frac{1}{2\sigma^2}\mu^2 + \ln \frac{1}{\sigma}
+        \right \}\\
+        &= h(x) \exp \{ \eta^\top T(x) - A(\eta)\}
+    \end{flalign*}
+    $\sigma$ cant be in $h(x)$ since $h(x)$ must be unparameterized
+    \[
+        T(x) = \begin{bmatrix}
+            x \\ x^2
+        \end{bmatrix}
+    \]
+    The quantities that involve the params $\mu$ and $\sigma^2$
+    \[
+        \eta = \begin{bmatrix}
+            \dfrac{\mu}{\sigma^2} \\[5pt]
+            -\dfrac{1}{2\sigma^2}
+        \end{bmatrix}
+    \]
+\end{example}
+
+\begin{example}
+    {Bernoulli}{}
+    $x\sim \mathrm{Bernoulli}(\pi)$\\
+    $x\sim \pi \langle 1 \rangle + (1-\pi) \langle 0 \rangle$
+    % \\
+    \begin{flalign*}
+        p(x; \pi) = \pi ^{\mathbbm 1 \{ x=1 \}}\cdot (1-\pi)^{\mathbbm 1 \{ x=0 \}}
+    \end{flalign*}
+\end{example}
+\noindent
+Gaussian (linear) and Bernoulli (classification) distribution both part of 
+exponential function family
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

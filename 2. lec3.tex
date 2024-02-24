@@ -1,0 +1,216 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section{Lecture 3 - Jan 18}
+\[
+    t^{(m)} \sim \mathcal N (w^\top x^{(m)}, \sigma^2)
+\]
+$\mathcal D_{\text{train}} = \{ 
+    (x^{(m)}, t^{(m)})
+\}_{m=1}^M
+$ (training set w/ $m$ samples)
+\[
+    \hat w _{MLE} = \argmax_{w} p(D ; w) 
+\]
+$w$ is not a random variable 
+\\
+\begin{flalign*}
+    &\argmax_w p(t^{(1)} , \ldots, t^{(m)}  | x^{(1)}, \ldots, x^{(m)}; w )\\
+    =& \argmax_w \prod_{m=1}^{M} p(t^{(m)} | x^{(1)}, \ldots, x^{(m)}; w ) \\
+    =& \argmax_w \prod_{m=1}^{M} p(t^{(m)} | x^{(m)}; w )
+    \intertext{$t^{(m)}$ only related to $x^{(m)}$; can drop other $x^{(i)}$}
+    =& \argmax_w \prod_{m=1}^{M} \frac{1}{\sqrt[]{2\pi} \sigma} \exp \left \{
+        -\frac{1}{2}\left (\frac{t^{(m)} - w^\top x ^{(m)}}{\sigma}\right )^2
+    \right \}\\
+    =& \argmax_w \log \prod_{m=1}^{M} \frac{1}{\sqrt[]{2\pi} \sigma} \exp \left \{
+        -\frac{1}{2}\left (\frac{t^{(m)} - w^\top x ^{(m)}}{\sigma}\right )^2
+    \right \} \\
+    =& \argmin_w \left ( 
+        \frac{1}{2\sigma^2} \sum_{m=1}^{M} (t^{(m)} - w^\top x^{(m)})^2
+    \right )
+    \\
+    =& \argmin_w \left ( 
+        \frac{1}{2M} \sum_{m=1}^{M} (t^{(m)} - w^\top x^{(m)})^2
+    \right )
+    \intertext{Since $\sigma^2$ is a constant; irrelevant, can be replaced with anything}
+    % \\
+    =& \argmin_w \left ( 
+        MSE
+    \right )
+\end{flalign*}
+MSE $\iff$ MLE assuming $t^{(m)} \sim \mathcal N (w^\top x^{(m)}, \sigma^2)$
+
+\subsection{Maximum a Posteriori (MAP)}
+$w$ = random variable
+
+
+\[
+    t^{(m)} \sim \mathcal N (w^\top x^{(m)}, \sigma^2)
+\]
+\[
+    w_i \sim \mathcal N (0, \sigma_{noise}^2) \text{ or } w_i \sim \mathrm{Laplacian}(0, \lambda)
+\]
+\[
+    \hat w_{MAP} = \argmax p(w | \mathcal D)
+\]
+
+\begin{flalign*}
+    \hat w_{MAP} &= \argmax_w p(w | \mathcal D) \\
+    &= \argmax_w \frac{p(\mathcal D | w) \cdot p(w)}{p(\mathcal D)} \\
+    &= \argmax_w p(\mathcal D | w) p(w) \\
+    &= \argmax_w \log p(\mathcal D | w) p(w) \\
+    &= \argmax_w [\log p(\mathcal D | w) + \log p(w)]
+\end{flalign*}
+$l1$-penalty if $w \sim \mathcal N$
+\\
+$l2$-penalty if $w \sim \mathrm{Laplacian}$
+
+\begin{expln}
+    {Random Variable}{}
+    Frequentist Interpretation - a RV is the outcome of a \underline{repeatable} experiment
+    \\
+    \textbf{Bayesian Interpretation} - anything unknown can be a RV: subjective belief 
+\end{expln}
+
+\subsection{Assignment}
+MAP w/ Gaussian - L2-regularization (dense model)
+\[
+    J(w) = \frac{1}{2M} \|Xw - t \|^2 + \lambda \| w \|_2^2
+\]
+\noindent
+MAP w/ Laplacian - L1-regularization (sparse model)
+\[
+    J(w) = \frac{1}{2M} \|Xw - t \|^2 + \lambda \| w \|_1
+\]
+\\
+soft penalty equivalent to a hard constraint in convex optimization\\
+large hypothesis class implies overfitting, regularization constrains hypothesis class. 
+\\
+MLE $\iff$ MSE\\
+MAP $\iff$ MSE + reg
+
+\subsection{Binary Classification}
+\[
+    t^{(m)} \sim \{ 0, 1 \} 
+\]
+\[
+    t^{(m)} \sim \mathrm{Bernoulli}\left ( 
+        \sigma (w^\top x^{(m)} + b)
+    \right )
+\]
+\[
+    \sigma(z) = \frac{1}{1 + e^{-z}}
+\]
+\[
+    \mathcal D_{train} = \{ 
+        ( x^{(m)}, t^{(m)} )
+    \}_{m=1}^M
+\]
+\begin{flalign*}
+    p(\mathcal D; w,b) &= \prod_{m=1}^{M} p( t^{(m)} | x^{(m)};w,b)\\
+    &= \argmax_{w,b} \prod_{m=1}^{M} \sigma (w^\top x^{(m)} +b )^{(t^{(m)})}
+    (1- \sigma (w^\top x^{(m)} +b ))
+    \\
+    &= \argmax \ln \prod_{m=1}^{M} \sigma (w^\top x^{(m)} +b )^{(t^{(m)})}
+    (1- \sigma (w^\top x^{(m)} +b ))^{1- t^{(m)}}
+    \\
+    &= \argmax \sum_{m=1}^{M} [(t^{(m)}) \ln \sigma (w^\top x^{(m)} +b ) +
+    (1- t^{(m)})\ln(1- \sigma (w^\top x^{(m)} +b ))]
+    \\
+    &= \argmax (\text{Cross Entropy Loss})
+\end{flalign*}
+if $t^{(m)} = 1$, likelihood: $\sigma(w^\top x^{(m)} + b)$\\
+elif, $t^{(m)} = 0$, likelihood: $1-\sigma(w^\top x^{(m)} + b)$
+
+\subsection{Multiclass Classification}
+Probability Assumption (form of dist.)
+\\
+Parameter 
+\\
+Likelihood
+\\
+Loss
+
+
+
+
+
+
+
+
+\end{document}

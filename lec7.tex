@@ -1,0 +1,253 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 7 - Feb 1}
+\section{Convexity Cont'd}
+\begin{thm}
+{}{}
+Let $f$ be a twice differentiable function on a convex domain;
+\\
+the following three conditions are equivalent
+\begin{enumerate}
+    \item $f$ is a convex function
+    \item {[1st Order]} $\forall x,y \in \mathrm{dom}f$, 
+    \[
+        f(y) \ge f(x) + [\nabla f(x)]^\top (y-x)
+    \]
+    (Linear approx is always a lower bound)
+    \item {{2nd order}} $\forall x \in \mathrm{dom} f$ \[
+        \nabla ^2 f(x) \ge 0
+    \]
+    (positive semidefinite)
+\end{enumerate}
+\end{thm}
+\noindent
+1D: $f''(x) \ge 0$ then curve is convex\\
+High-D: 
+\begin{list}{}{}
+    \item if $\nabla^2 f(x)$ diagonal - eigenval are diagonal elements;\\
+        nonnegative evals $\to$ every dimension is curving up $\to$ convex
+    \item $\nabla^2 f(x)$ not diagonal - check eigenvals; \\negative eval $\to$ not convex 
+    \\
+    nonnegative eval only $\to$ convex
+\end{list}
+\pagebreak
+\begin{proof}
+    {2. $\to$ 1.}{}
+    $\forall x,y \in \mathrm{dom} f; \ \ \forall \lambda \in (0,1)$\\
+    The first order condition:
+    \[
+        \forall x,y \in \mathrm{dom}f: f(y) \ge f(x)+(\nabla_x f(x))^\top (y-x)
+    \]
+    Put $z = \lambda x + (1-\lambda)y$ into the $x$ 
+    \begin{equation}
+        f(y) \ge f(z) + [\nabla_z f(z)]^\top (y-z)
+    \end{equation}
+    Put $z$ into $x$ and $x$ into $y$
+    \begin{equation}
+        f(x) \ge f(z) + [\nabla_z f(z)]^\top (x-z)
+    \end{equation}
+    $\lambda (2) + (1-\lambda)(1)$ gives us:
+    \begin{flalign*}
+        \lambda f(x) + (1-\lambda)f(y) &\ge \lambda f(z) + (1-\lambda) f(z)\\
+        &+ (1-\lambda) [\nabla_z f(z)]^\top(y-z) + \lambda[\nabla _z f(z)]^\top (x-z)\\
+        % 
+        &\ge f(z)
+        + [\nabla_zf(z)]^\top (y-z - \lambda y + \lambda z +\lambda x - \lambda z )\\
+        &= f(z)
+        + [\nabla_zf(z)]^\top [\lambda x + (1-\lambda)y - z]
+        \intertext{Since $z = \lambda x + (1-\lambda)y$ (from (1))}
+        &= f(z) + [\nabla_zf(z)]^\top [0]  = f(z)
+    \end{flalign*}
+\end{proof}
+\begin{proof}
+    {3. $\to$ 2.}{}
+    $\forall x,y \in \mathrm{dom}f$
+    \[
+        f(y) = f(x) + [\nabla f(x)]^\top (y-x) + \frac{1}{2}(y-x)^\top [\nabla^2 f(z)](y-x)
+    \]
+    for some $z$ between $x$ and $y$.\\
+    Taylor Expansion to first order:
+    \[
+        T(y) = f(x) + [\nabla f(z)]^\top (y-x) \text{ for $z$}
+    \]
+    (MVT)
+    Since $\nabla^2 f(z)\ge 0$, second order term $\ge 0$; Thus
+    \[
+        f(y) \ge T(y)
+    \]
+\end{proof}
+
+\section{MSE}
+\begin{flalign*}
+    \nabla_w J_{\mathrm{MSE}} &= \frac{1}{M}(X^\top X w - Xt)\\
+    \nabla w^2_w J_{\mathrm{MSE}} &= \frac{1}{M} X^\top X
+    \intertext{$\forall v, v^\top X^\top X v = (Xv)^\top Xv = \| Xv \|_2^2 \ge 0$}
+\end{flalign*}
+
+\begin{definition}
+    {Optimality}{}
+    $x$ is a \textbf{Global Optimum} for $f$ iff 
+    \[
+        \forall y\in \mathrm{dom}f, \ f(x) \le f(y)
+    \]
+    $x$ is a \textbf{Local Optimum} of $f$ iff
+    \[
+        \exists \epsilon > 0 \text{ s.t. } \forall y\in \mathrm{dom}f
+    \]
+    if $\| x- y \| < \epsilon$ then $f(x) \le f(y)$
+\end{definition}
+
+
+\begin{thm}
+    {}{}
+    Let $f$ be a convex function, a local optimum $x$ of $f$ is a global optimum
+\end{thm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

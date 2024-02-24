@@ -1,0 +1,226 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 6 - Jan 30}
+\section{Validation}
+Train set $\gets$ minimize objective
+\\
+Validation set $\gets$ hyperparameter selection (try model internally)
+\\
+Test set $\gets$ mimic deployment of ML system
+\\[5pt]
+For diff. values of $\lambda_1$:
+\begin{list}{}{}
+    \item Train $h^* = \argmin_{h\in \mathcal H} J_\lambda (h, \mathcal D_{\mathrm{train}})$
+    \item Validate $\mathrm{err}_\lambda =\mathrm{err}(\lambda) = \mathrm{Err}(h^*_\lambda , \mathcal D_{\mathrm{val}})$ 
+    \\error function is "client's" error
+\end{list}
+Choose $\lambda^* = \argmin_{\lambda} \mathrm{err}(\lambda)$ $\gets$ delivery of sys. to client\\
+(maximize over previous $\lambda$s)\\[5pt]
+Report $\mathrm{Err} (h_{\lambda^*}^*, \mathcal D_{\mathrm{test}})$ $\gets$ client's disatisfaction
+\\[10pt]
+What if we have multiple hyperparams (ie. $\lambda_1, \lambda_2, \lambda_3, \ldots, \lambda_k$) each taking
+$v$ values. \\
+size: $|v|^k$\\
+Minimize with coordinate descent (fix all but one $\lambda$, tune $\lambda$; repeat for all).\\
+Can't do regular gradient descent; $(\argmin f)$ nondifferentiable
+\subsection{Why not learn hyperparam during training?}
+\[
+    \argmin_{w,\lambda} \frac{1}{2M} \| Xw - t\|^2 + \lambda \| w\| ^2 \Rightarrow \lambda^* = 0
+\]
+Ineffective 
+% Train $h^* = \argmin_{h\in \mathcal H} J_\lambda (h, \mathcal D_{\mathrm{train}})$
+% \\
+% Validate 
+\section{Convexity}
+(defn in lec 5)
+\begin{definition}
+    {Concave}{}
+    $f$ is a concave function iff $-f$ is a convex function\\
+    (not important)
+\end{definition}
+\noindent
+Convex functions may not be differentiable; but must be continuous\\
+Develop conditions similar to convexity that are easy to verify. 
+(convexity hard to verify for all points)
+\begin{thm}
+{}{}
+Let $f$ be a twice-differentiable function on a convex domain. \\
+The following three statements are equivalent:
+\begin{enumerate}
+    \item $f$ is a convex function
+    \item {[1st order condition]} \\
+        $\forall x,y \in \mathrm{domain}_f$
+        \[
+            f(y) \ge f(x) + [\nabla _xf(x)]^\top (y-x)
+        \]
+        $[\nabla _xf(x)]^\top (y-x) = \sum_{i=1}^{d} \frac{\partial f(x)}{\partial x_i} (y_i - x_i)$
+        \\
+        (tangent line/hyperplane)
+
+    \item {[2nd order condition]}\\
+    $\forall x \in \mathrm{dom}_f$
+    \begin{flalign*}
+            H &= \nabla_x^2 f(x) \ge 0 \\
+            &= \begin{bmatrix}
+                \frac{\partial ^2 f}{\partial x_1 \partial x_1} & \frac{\partial ^2 f}{\partial x_1 \partial x_2} & \cdots & \frac{\partial ^2 f}{\partial x_1 \partial x_d}\\
+                \vdots &\vdots & \ddots & \vdots \\
+                \frac{\partial ^2 f}{\partial x_d \partial x_1} & \frac{\partial ^2 f}{\partial x_d \partial x_2} & \cdots & \frac{\partial ^2 f}{\partial x_d \partial x_d}\\
+            \end{bmatrix}
+    \end{flalign*}
+    
+\end{enumerate}
+\end{thm}
+\begin{flalign*}
+    f(x_1, x_2) &= x_1^2 + x_2^2\\
+    \frac{\partial f}{\partial x} &= \begin{bmatrix}
+        \frac{\partial^2 f}{\partial x_1 \partial x_1} & \frac{\partial^2 f}{\partial x_1 \partial x_2}\\[5pt]
+        \frac{\partial^2 f}{\partial x_2 \partial x_1} & \frac{\partial^2 f}{\partial x_2 \partial x_2}
+    \end{bmatrix}
+\end{flalign*}
+\noindent
+zero diagonal + pos and neg diagonal $\to$ disentangled \\
+nonzero offdiagonal $\to$ entangled; need to find eigenvecs/eigenvals\\
+If $H$ is not diagonal, then you need to check eigenvalues\\
+All eigenvalues nonnegative $\iff$ Positive Semi-Definite (PSD)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

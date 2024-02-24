@@ -1,0 +1,263 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{bbm}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 10 - Feb 13}
+% \noindent\rule{\textwidth}{0.5pt}
+\section{Midterm Exam}
+3 questions; up to Feb 15 lecture
+\\
+\noindent\rule{\textwidth}{0.5pt}
+
+\subsection{Exponential Family}
+($\mathrm{EXP}$)\\
+(rev from last lecture)
+\[
+    p(x;\eta) = h(x) \exp \{ \eta ^\top T(x) - A(\eta) \}
+\]
+\[
+    A(\eta) = \ln \int h(x)\exp (\eta ^\top T(x))dx
+\]
+$A(\eta)$ is convex
+\\
+log likelihood is convex in $\eta$
+\\
+moment generating property
+\[
+    \frac{\partial A(\eta)}{\partial \eta} = \underset{x\sim p(x; \eta)}{\mathbb E}[T(x)]
+    \ \ \ \ 
+    \frac{\partial^2 A(\eta)}{\partial \eta \ \partial \eta^\top}=
+    \underset{x \sim p(x; \eta)}{\mathrm{Cov}}[T(x)]
+\]
+\noindent
+MLE $\iff$ Moment Matching \\
+organize moment params - same as moment stat (?; 27 min feb 13 lec)\\
+$\hat \mu= \underset{x\sim p(x; \eta)}{\mathbb E}[T(x)]$
+% \\
+% \noindent\rule{\textwidth}{0.5pt}
+
+\subsubsection{Linear Regression}
+\[
+    \{(x^{(m)}, t^{(m)}) \} _{m=1}^M
+\]
+$t^{(m)} | x^{(m)} \sim \mathrm{EXP} (\eta^{(m)})$
+
+
+
+
+
+
+% finish
+% response function
+% \\
+
+
+\noindent
+with canonical response function
+\[
+    \eta ^{(m)} = w^\top x ^{(m)}
+\]
+GLM:
+\[
+    t^{(m)} | x^{(m)} \sim \mathrm{EXP}(w^\top x^{(m)})
+\]
+$w^\top x^{(m)}$ are the natural parameters
+% \\
+\begin{flalign*}
+    \ln p(t^{(1)} \cdots t^{(m)} | x^{(1)} \cdots x^{(m)}) &= 
+    \sum_{m=1}^{M} \ln \cdot h(x^{(m)})\exp (w^\top x^{(m)} t - A(\eta))
+\end{flalign*}
+\begin{flalign*}
+    \frac{\partial}{\partial w}\ln p &= \sum_{m=1}^{M} \left [
+        t^{(m)} \cdot x^{(m)}_i- \frac{\partial A(\eta)}{\partial \eta}
+        \cdot 
+        \frac{\partial \eta}{\partial w_i}
+    \right ]\\
+    &= \sum_{m=1}^{M} \left [
+        t^{(m)} \cdot x^{(m)}_i- 
+        \underset{ t^{(m)} \sim \mathrm{EXP}(t^{(m)} |x^{(m)}; \eta) }
+        {\mathbb E[t^{(m)}]}
+        \cdot 
+        x_i^{(m)}
+    \right ]
+\end{flalign*}
+
+\subsubsection{Logistic Regression}
+\[
+    \eta ^{(m)} = w^\top x^{(m)}
+\]
+mean param from natural param; need $\psi$ inverse
+\[
+    \mu^{(m)} = \psi ^{-1} (\eta^{(m)}) = \sigma (\eta^{(m)})
+\]
+Linear poisson regression (see feb 13 notes)
+\\
+(Canonical response func chosen bc gradient is nice; prediction uses mean params instead of natural)
+
+\section{Nonlinear Models}
+Design nonlinear features\\
+Nonlinear kernels (68 min)
+\begin{list}{}{}
+    \item if model only depends on 
+    \[
+        [x^{(i)}]^\top [x^{(j)}]
+    \]
+    we may extened the notion of inner product $\langle x^{(i)}, x^{(j)} \rangle$
+\end{list}
+Neural networks - a stack of linear predictions (learnable)\\[10pt]
+Non linear problems exist
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
