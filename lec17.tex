@@ -1,0 +1,207 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{bbm}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 16 - Mar 14; RNN Architectures}
+
+\section{CNN Recap}
+basic idea = sliding window that captures some spatial invariance info 
+\\
+Pooling - reduce information to one value
+
+
+
+
+
+\section{Recurrent Neural Netowrk}
+Feedback loop in hidden layer
+\\
+"recurrent" path from prev iteration hidden layer
+
+
+\subsection{Generation}
+pass input through NN to get relations, then generate. 
+\\
+For translation (and other similar applications), multi modal output (ie. multiple
+possible "answers") becomes an issue (doesn't know what it already outputed; 
+frankenstein outputs)
+\begin{list}{}{}
+    \item Seq2Seq solves this (passes prev output to side branches)
+\end{list}
+% \\
+\noindent
+Encoder RNN $\to$ input to get relations
+\\
+Decoder RNN $\to$ generate output
+\begin{enumerate}
+    \item Self generated word during inference
+    \item Ground truth taken of the previous step
+\end{enumerate}
+Use 1. for inference task (decode)
+\\
+Use 2. initially for training task; but gradually move to 1.
+\\
+Often times easier to follow prefix; 
+this type of training task easier than inference, so we want to insert some of the
+difficulty from inference into training\\
+(get experience from generation, and learn how to recover from poor generation in training)
+
+
+\subsection{Vanilla RNN}
+\[
+    h^{(t)} = f(W_hh^{(t-1)} + W_xx^{(t)} + b)
+\]
+Backprop through time
+\\
+CLT - var grows linearly w/ number of variables
+\\
+Gradient vanishing or explosion
+\begin{list}{}{}
+    \item BP - lin sys.
+    \item FP - non line sys (potentially chaotic; small change amplified to 
+    large (unbounded))
+\end{list}
+
+\subsection*{Whats Wrong?}
+Exact gradient isn't what we want. (if we have such a large gradient, we can't
+make training stable)
+
+\section{LSTM and GRU}
+\subsection*{Long Short Term Memory}
+Keeps a cell $c_t$ and hidden state $h_t$\\
+Input gate - sigmoid function, tells us how much information we
+need to pick up
+\\
+Forget gate - sigmoid func, tells us how much information we should drop/forget
+
+\subsection*{Gated Recurrent Unit}
+Keep cell and hidden state
+
+
+\section{RNN Usage}
+Can also be bidirectional
+
+
+\section{Prior}
+CNN
+\begin{list}{}{}
+    \item spatial neighborhood
+    \item capture info via. sliding window
+\end{list}
+RNN
+\begin{list}{}{}
+    \item ordered info
+    \item sequential processing 
+\end{list}
+
+
+\section{Parse Tree}
+Onion/nested sentences
+\\
+logically connects words
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,184 @@
+\documentclass{article}
+\usepackage{textcomp, gensymb}
+\usepackage{utf8add}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{systeme}
+\usepackage{tcolorbox}
+\usepackage{outlines}
+\usepackage{bbm}
+\usepackage[ruled,longend]{algorithm2e}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\hypersetup{
+  colorlinks,
+  citecolor=black,
+  filecolor=black,
+  linkcolor=black,
+  urlcolor=black
+}
+
+
+\title{CMPUT 367}
+\author{Roderick Lan}
+\date{}
+
+\usepackage{natbib}
+\makeatletter
+% \crefformat{tcb@cnt@Example}{example~#2#1#3}
+% \Crefformat{tcb@cnt@Example}{Example~#2#1#3}
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{definition}{Definition}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = blue!75!black,
+  colback = blue!10
+}{def}
+
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{example}{Example}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{ex}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{thm}{Thm}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = orange!75!black,
+  colback = orange!10
+}{thm}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = subsection]
+{expln}{Explain}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = red!75!black,
+  colback = red!10
+}{exp}
+
+\makeatother
+\newtcbtheorem[auto counter, number within = section]
+{proof}{Proof}{%                                                        
+  breakable,
+  fonttitle = \bfseries,
+  colframe = gray!75!black,
+  colback = gray!10
+}{prf}
+
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\break
+
+\section*{Lecture 13 - Mar 5}
+
+
+
+\section{Recap}
+Foward Prop - know weights, compute output (recursive, bottom up)
+\\
+Backward Prop - know output, update weights via gradients (recursive, top down)
+
+
+
+\section{Backprop}
+\subsection*{Initialization}
+$L$ layers \[
+    \dfrac{\partial J}{\partial y^{(L)}}, \ \ \ \dfrac{\partial J}{\partial z^{(L)}}
+\]
+Depends on loss
+\\
+The loss, $J$, should be \textbf{generally differentiable}
+\\
+Derivatives must be informative 
+
+\subsection*{Recursion}
+Suppose $\dfrac{\partial J}{\partial y^{(l)}}, \dfrac{\partial J}{\partial z^{(l)}}$
+is known. 
+\\[10pt]
+Goal: Calculate \[
+    \dfrac{\partial J}{\partial y^{(l-1)}}, \ \ \ \dfrac{\partial J}{\partial z^{(l-1)}}
+\]
+\[
+    \dfrac{\partial J}{\partial y_1} = 
+    \dfrac{\partial J}{\partial z_1} \cdot \dfrac{\partial z_1}{\partial y_1}+
+    \dfrac{\partial J}{\partial z_2} \cdot \dfrac{\partial z_2}{\partial y_2}
+    +\cdots 
+\]
+
+
+
+
+\subsection*{Termination}
+Terminate once you get derivative about input\\
+ie. once
+\[
+    \dfrac{\partial J}{\partial y^{(1)}} \dfrac{\partial J}{\partial z^{(1)}}
+\] are calculated
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
