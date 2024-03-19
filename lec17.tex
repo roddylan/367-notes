@@ -87,115 +87,116 @@
 \tableofcontents
 \break
 
-\section*{Lecture 16 - Mar 14; RNN Architectures}
-
-\section{CNN Recap}
-basic idea = sliding window that captures some spatial invariance info 
+\section*{Lecture 17 - Mar 19}
+Prior knowledge abt gradient
 \\
-Pooling - reduce information to one value
+(finish - first 9 min)
 
 
-
-
-
-\section{Recurrent Neural Netowrk}
-Feedback loop in hidden layer
+\subsection{Prior Knowledge}
+CNN - spatial neighborhood; sliding window
 \\
-"recurrent" path from prev iteration hidden layer
-
-
-\subsection{Generation}
-pass input through NN to get relations, then generate. 
+RNN - ordered info; sequential proc
 \\
-For translation (and other similar applications), multi modal output (ie. multiple
-possible "answers") becomes an issue (doesn't know what it already outputed; 
-frankenstein outputs)
+LLM has momentum, variance, gradient info
+\\[10pt]
+Don't want to compress weight, want to compress gradient information without losing information
 \begin{list}{}{}
-    \item Seq2Seq solves this (passes prev output to side branches)
+    \item pytorch and tf give gradient of all weights (whole memory space)
+    \item can also do it layer by layer
 \end{list}
-% \\
 \noindent
-Encoder RNN $\to$ input to get relations
+grad = loss.back()
 \\
-Decoder RNN $\to$ generate output
-\begin{enumerate}
-    \item Self generated word during inference
-    \item Ground truth taken of the previous step
-\end{enumerate}
-Use 1. for inference task (decode)
-\\
-Use 2. initially for training task; but gradually move to 1.
-\\
-Often times easier to follow prefix; 
-this type of training task easier than inference, so we want to insert some of the
-difficulty from inference into training\\
-(get experience from generation, and learn how to recover from poor generation in training)
+parm = opt.adam(param, grad)
 
 
-\subsection{Vanilla RNN}
-\[
-    h^{(t)} = f(W_hh^{(t-1)} + W_xx^{(t)} + b)
-\]
-Backprop through time
+\section{Structured Network}
+Has parse tree structure info.
+
+\subsection{Recursive Propagation}
+RNN that incorporates parse structure 
+
+
+\section{Tree Based Convolution}
+Tree structure instead of sequence
+
+
+
+\section{Seq2Seq and Attention}
+\subsubsection{Sidenote:}
+In compilers, CFG is NP-complete.
 \\
-CLT - var grows linearly w/ number of variables
+Avoid backtracking, look forward languages preferred
+
+\subsection{Seq2Seq}
+Given sequence of input signals (usually time series info. like text)
 \\
-Gradient vanishing or explosion
+Encoder / Decoder structure
+\\
+(finish; 41 min in lec)
+\\
+\textbf{Important:} Need to feed data back
+
+\subsubsection{Training}
+Decoder input layer:
 \begin{list}{}{}
-    \item BP - lin sys.
-    \item FP - non line sys (potentially chaotic; small change amplified to 
-    large (unbounded))
+    \item Attempt 1 - feed in predicted
+    \item Attempt 2 - feed in ground truth
+\end{list}
+Cannot feed ground ground truth during inference
+
+\subsubsection{Inference}
+Decoder input layer - feed in predicted words
+\\
+Terminate w/ EOS token (EOS predicted $\to$ sentence terminated)
+
+\subsubsection{Caveat}
+Batch implementation
+\begin{list}{}{}
+    \item Padding EOS or 0 vector $\to$ incorrect
+    \item Masking $\to$ correct; 1 = actual step, 0 = virtual step
 \end{list}
 
-\subsection*{Whats Wrong?}
-Exact gradient isn't what we want. (if we have such a large gradient, we can't
-make training stable)
-
-\section{LSTM and GRU}
-\subsection*{Long Short Term Memory}
-Keeps a cell $c_t$ and hidden state $h_t$\\
-Input gate - sigmoid function, tells us how much information we
-need to pick up
-\\
-Forget gate - sigmoid func, tells us how much information we should drop/forget
-
-\subsection*{Gated Recurrent Unit}
-Keep cell and hidden state
-
-
-\section{RNN Usage}
-Can also be bidirectional
-
-
-\section{Prior}
-CNN
+\subsubsection{Inference Criteria}
+Single output classification
 \begin{list}{}{}
-    \item spatial neighborhood
-    \item capture info via. sliding window
+    \item MAP inference $\iff$ minimal empirical loss 
+    \item (get most likely category given inference)
+    \item \[
+        y = \argmax p(y | x)
+    \]
 \end{list}
-RNN
+Sentence Generation
 \begin{list}{}{}
-    \item ordered info
-    \item sequential processing 
+    \item generate best sentence
+    \[
+        \mathbf y = \argmax_\mathbf y p(\mathbf{y | x})
+    \]
+    \item arg max over entire sentence space
+    \item greedy can sometimes work
+    \item exhaustive search too long ($O(b^l)$)
+\end{list}
+Use something in between greedy and exhaustive $\to$ beam search
+\begin{list}{}{}
+    \item try all words or a few best
+    \item dont maintain all; maintian only several good partial seq. 
 \end{list}
 
-
-\section{Parse Tree}
-Onion/nested sentences
-\\
-logically connects words
+\subsection{Beam Search}
 
 
-
-
-
-
-
-
-
-
-
-
+\subsection{Isuses with Autoreg}
+Error accumulation
+\begin{list}{}{}
+    \item fix by feed in self gen words and anneal ground truth
+\end{list}
+% \\[5pt]
+Label bias
+\begin{list}{}{}
+    \item Locally normalized models prefer highly probable (but possibly unimportant)
+    words in a more conentrated pred.
+\end{list}
 
 
 
